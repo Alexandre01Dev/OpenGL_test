@@ -11,14 +11,19 @@
 #include <streambuf>
 #include <string>
 
-#include "shader.h"
+#include "EBO.h"
+#include "shaderClass.h"
+#include "shaders.h"
+#include "VAO.h"
 
 using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 std::string loadShaderSrc(const char* filename);
-
+float zoom = 0.5f;
+float lum = 1.0f;
+float shuffler[3] = {0.0f,0.0f,0.0f};
 uint64_t timeSinceEpochMillisec() {
     using namespace std::chrono;
     return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
@@ -28,10 +33,7 @@ uint64_t start = timeSinceEpochMillisec();
 int main()
 {
     std::cout << "Hello, World" << std::endl;
-
-    int success;
-    char infoLog[512];
-
+    
 
     /* glm test 
     glm::vec4 vec(1.0f,0.0f,1.0f,1.0f);     //base vector
@@ -85,20 +87,22 @@ int main()
         Shaders
     */
 
-    Shader shader = Shader("assets/vertex_core.glsl","assets/fragment_core.glsl");
-    ProgramShader purple = shader.getProgram(0);
-    std::string fragment2 = loadShaderSrc("assets/fragment_core2.glsl");
-    shader.loadShader(fragment2,GL_FRAGMENT_SHADER,1,1);
-    std::string vertex = loadShaderSrc("assets/vertex_core.glsl");
-    cout << to_string(shader.getProgram(0).getID()) << endl;
-    shader.loadShader(vertex,GL_VERTEX_SHADER,1,1);
-    ProgramShader green = shader.getProgram(1);
-    shader.getProgram(0).enableAll();
-    shader.getProgram(1).enableAll();
+    Shaders shaders = Shaders("assets/vertex_core.glsl","assets/fragment_core.glsl");
+    ProgramShader* purple = shaders.getProgram(0);
+    cout << "Program POINTER " << purple;
+    purple->enableAll();
+    //std::string fragment2 = loadShaderSrc("assets/fragment_core.glsl");
+    //shader.loadShader(fragment2,GL_FRAGMENT_SHADER,1,1);
+    //std::string vertex = loadShaderSrc("assets/vertex_core.glsl");
+  //  cout << to_string(shader.getProgram(0).getID()) << endl;
+    //shader.loadShader(vertex,GL_VERTEX_SHADER,1,1);
+    // ProgramShader green = shader.getProgram(1);
+    //shader.getProgram(0).enableAll();
+    //shader.getProgram(1).enableAll();
     
-
-    cout << to_string(shader.getProgram(0).getID()) << endl;
-    cout << to_string(shader.getProgram(1).getID()) << endl;
+    Shader shader = Shader("assets/vertex_core.glsl","assets/fragment_core.glsl");
+    //cout << to_string(shader.getProgram(0).getID()) << endl;
+   // cout << to_string(shader.getProgram(1).getID()) << endl;
    /* glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader[0]);
     glDeleteShader(fragmentShader[1]);*/
@@ -116,46 +120,46 @@ int main()
     //     0,1,2, // first triangle
     //     2,3,0
     // };
-
     float vertices[] = {
         // first triangle
-        -0.5f, -0.5f, 0.0f,
-        -0.25f, 0.5f, 0.0f,
-        -0.1f, -0.15f, 0.0f,
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.4f, 0.0f, //left bottom
+        -0.25f, 0.5f, 0.0f,  0.5f, 0.0f, 0.0f,  // top
+        -0.1f, -0.15f, 0.0f,  0.0f, 0.0f, 0.5f, // right bottom
 
         // second triangle
-        0.5f, -0.5f, 0.0f,
-        0.25f, 0.5f, 0.0f,
-        0.1f, -0.5f, 0.0f
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left bottom
+        0.25f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // top
+        0.1f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // right bottom
     };
 
-    unsigned int indices[] = {
+    GLuint indices[] = {
         0,1,2,
         3,4,5
     };
 
-    // VAO (Vertex Array Object) VBO (Vertex Buffer Object)
-    unsigned int VAO, VBO, EBO;
-    glGenVertexArrays(1,&VAO);
-    glGenBuffers(1,&VBO);
-    glGenBuffers(1,&EBO);
+    VAO VAO1;
+    VAO1.Bind();
 
-    // bind VAO
-    glBindVertexArray(VAO);
+    // Generates Vertex Buffer Object and links it to vertices
+    VBO VBO1(vertices, sizeof(vertices));
+    // Generates Element Buffer Object and links it to indices
+    EBO EBO1(indices, sizeof(indices));
 
-    // bind VBO
-    glBindBuffer(GL_ARRAY_BUFFER,VBO);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices), vertices , GL_STATIC_DRAW);
+    // Links VBO to VAO
+    VAO1.LinkAttrib(VBO1, 0,3, GL_FLOAT, 6*sizeof(float), (void*)0);
+    VAO1.LinkAttrib(VBO1, 1,3, GL_FLOAT, 6*sizeof(float), (void*)(3*sizeof(float)));
+    // Unbind all to prevent accidentally modifying them
+    VAO1.Unbind();
+    VBO1.Unbind();
+    EBO1.Unbind();
 
+    cout << purple->getID() << " change scale" << endl;
+    GLuint uniID = glGetUniformLocation(purple->getID(),"scale");
+    GLuint uniLum = glGetUniformLocation(purple->getID(),"luminosity");
+    GLuint uniShuffler = glGetUniformLocation(purple->getID(),"shuffler");
     
-    // set attribute pointer
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
-    glEnableVertexAttribArray(0);
 
-    // set up EBO
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
+
     while (!glfwWindowShouldClose(window))
     {
         // read input
@@ -165,18 +169,26 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw shapes
-        glBindVertexArray(VAO);
+        //vao1.Bind();
+   
        
         //glDrawArrays(GL_TRIANGLES,0,6);
         //first triangle
         //glUseProgram(shaderProgram[0]);
-        green.use();
+        purple->use();
+        glUniform1f(uniID,zoom);
+        glUniform1f(uniLum,lum);
+        if(shuffler != NULL)
+            glUniform3f(uniShuffler,shuffler[0],shuffler[1],shuffler[2]);
         //glUseProgram(shader.getProgram(0).getID());
-        glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_INT,0);
+     
+        VAO1.Bind();
+        //shader.Activate();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        //glUseProgram(shader.getProgram(1).getID());
-        purple.use();
-        glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_INT,(void*) (3*sizeof(unsigned int)));
+        ////glUseProgram(shader.getProgram(1).getID());
+       // purple.use();
+       // glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_INT,(void*) (3*sizeof(unsigned int)));
         // send new frame to window
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -190,9 +202,11 @@ int main()
             framesPerSec = 0;
         }
     }
-    glDeleteVertexArrays(1,&VAO);
-    glDeleteBuffers(1,&VAO);
-    glDeleteBuffers(1,&EBO);
+    // delete all
+    VAO1.Delete();
+    VBO1.Delete();
+    EBO1.Delete();
+    //shader.Delete();
     glfwTerminate();
     return 0;
 }
@@ -203,12 +217,50 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0,0,width,height);
 }
 
+void genShuffle()
+{
+    shuffler[0] =  static_cast<float>(rand()) / RAND_MAX;
+    shuffler[1] =  static_cast<float>(rand()) / RAND_MAX;
+    shuffler[2] =  static_cast<float>(rand()) / RAND_MAX;
+
+    cout << shuffler[0] << " " << shuffler[1] << " " << shuffler[2] << endl;
+}
 void processInput(GLFWwindow* window)
 {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window,true);
-    }   
+    }
+    if(glfwGetKey(window,GLFW_KEY_UP) == GLFW_PRESS)
+    {
+        std::cout << "Zoom to " << zoom << endl;
+        if(zoom < 1)
+            zoom += 0.05f;
+    }
+    if(glfwGetKey(window,GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
+     
+        if(zoom > -0.9)
+        {
+            zoom -= 0.05f;
+        }
+    }
+    if(glfwGetKey(window,GLFW_KEY_L) == GLFW_PRESS)
+    {
+        
+        lum += 0.05f;
+    }
+
+    if(glfwGetKey(window,GLFW_KEY_K) == GLFW_PRESS)
+    {
+        
+        lum -= 0.05f;
+    }
+    if(glfwGetKey(window,GLFW_KEY_R) == GLFW_PRESS)
+    {
+        
+        genShuffle();
+    }
 }
 
 std::string loadShaderSrc(const char* filename)
@@ -226,7 +278,7 @@ std::string loadShaderSrc(const char* filename)
         ret = buf.str();
     }else
     {
-        std::cout << "Could not open " << filename << std::endl;
+       cout << "Could not open " << filename << endl;
     }
     return ret;
 }

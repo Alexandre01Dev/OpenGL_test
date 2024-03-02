@@ -6,7 +6,7 @@ class ProgramShader
 {
 public:
     std::vector<unsigned int> shaders = std::vector<unsigned int>();
-    unsigned int program;
+    const unsigned int program;
     ProgramShader(unsigned int program);
     int add(unsigned int shader);
     void enable(int index);
@@ -14,6 +14,7 @@ public:
     void disable(int index);
     void disableAll();
     void remove(int index);
-    unsigned int getID();
+    void removeAll();
+    unsigned int getID() const;
     void use();
 };
