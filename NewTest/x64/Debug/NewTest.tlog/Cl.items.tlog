@@ -1,9 +1,12 @@
-C:\Users\altat\source\repos\NewTest\NewTest\EBO.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\EBO.obj
+C:\Users\altat\source\repos\NewTest\NewTest\camera.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\camera.obj
+C:\Users\altat\source\repos\NewTest\NewTest\ebo.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\ebo.obj
 C:\Users\altat\source\repos\NewTest\NewTest\lib\glad.c;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\glad.obj
 C:\Users\altat\source\repos\NewTest\NewTest\lib\stb.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\stb.obj
 C:\Users\altat\source\repos\NewTest\NewTest\main.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\main.obj
 C:\Users\altat\source\repos\NewTest\NewTest\programShader.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\programShader.obj
 C:\Users\altat\source\repos\NewTest\NewTest\shaderClass.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\shaderClass.obj
 C:\Users\altat\source\repos\NewTest\NewTest\shaders.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\shaders.obj
-C:\Users\altat\source\repos\NewTest\NewTest\VAO.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\VAO.obj
-C:\Users\altat\source\repos\NewTest\NewTest\VBO.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\VBO.obj
+C:\Users\altat\source\repos\NewTest\NewTest\stb.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\stb.obj
+C:\Users\altat\source\repos\NewTest\NewTest\texture.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\texture.obj
+C:\Users\altat\source\repos\NewTest\NewTest\vao.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\vao.obj
+C:\Users\altat\source\repos\NewTest\NewTest\vbo.cpp;C:\Users\altat\source\repos\NewTest\NewTest\x64\Debug\vbo.obj

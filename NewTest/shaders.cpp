@@ -14,19 +14,21 @@ char infoLog[512];
 
 
 
-Shaders::Shaders(const char* vertexFile, const char* fragmentFile)
+Shaders::Shaders()
+{
+    
+}
+
+ProgramShader* Shaders::loadShader(const char* vertexFile, const char* fragmentFile, unsigned programID)
 {
     std::string vertexCode = loadShaderSrc(vertexFile);
     std::string fragmentCode = loadShaderSrc(fragmentFile);
-
-   
-    
- 
-    loadShader(fragmentCode,GL_FRAGMENT_SHADER,1,0);
-    loadShader(vertexCode,GL_VERTEX_SHADER,1,0);
+    loadShader(fragmentCode,GL_FRAGMENT_SHADER,1,programID);
+    loadShader(vertexCode,GL_VERTEX_SHADER,1,programID);
+    return getProgram(programID);
 }
 
-ProgramShader& Shaders::loadShader(std::string& code,GLenum type, int count, unsigned int programID)
+ProgramShader* Shaders::loadShader(std::string& code,GLenum type, int count, unsigned int programID)
 {
     // compile shader
     GLuint shader = glCreateShader(type);
@@ -76,7 +78,7 @@ ProgramShader& Shaders::loadShader(std::string& code,GLenum type, int count, uns
    
     //glDeleteShader(shader);
     
-    return *programptr;
+    return programptr;
 }
 
 void Shaders::ActivateALL()

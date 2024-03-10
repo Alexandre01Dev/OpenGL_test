@@ -12,16 +12,16 @@
 ProgramShader::ProgramShader(unsigned int _program):
 program(_program)
 {
-    std::cout << "creating program object with "+ std::to_string(program) <<  std::endl;
+    //std::cout << "creating program object with "+ std::to_string(program) <<  std::endl;
 }
 
 
 int ProgramShader::add(unsigned int shader)
 {
-    std::cout << "Add shader " << std::to_string(shader) << " in program " << std::to_string(program) << std::endl;
-    std::cout << "list size " << std::to_string(shaders.size()) << std::endl;
+    //std::cout << "Add shader " << std::to_string(shader) << " in program " << std::to_string(program) << std::endl;
+    //std::cout << "list size " << std::to_string(shaders.size()) << std::endl;
     shaders.push_back(shader);
-    std::cout << "list size " << std::to_string(shaders.size()) << std::endl;
+  //  std::cout << "list size " << std::to_string(shaders.size()) << std::endl;
     
     return shaders.size()-1;
 }
@@ -76,7 +76,7 @@ void ProgramShader::removeAll()
 
 unsigned int ProgramShader::getID() const
 {
-    std::cout << "Program ID CHANGED ???" << std::to_string(program) + "\n";
+   // std::cout << "Program ID CHANGED ???" << std::to_string(program) + "\n";
     return program;
 }
 

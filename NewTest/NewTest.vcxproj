@@ -108,6 +108,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,7 +134,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EBO.cpp">
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="ebo.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
@@ -287,21 +290,31 @@
     <ClCompile Include="programShader.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="shaders.cpp" />
-    <ClCompile Include="VAO.cpp" />
-    <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="stb.cpp" />
+    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="vao.cpp" />
+    <ClCompile Include="vbo.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EBO.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="ebo.h" />
     <ClInclude Include="programShader.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="shaders.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="VAO.h" />
-    <ClInclude Include="VBO.h" />
+    <ClInclude Include="vbo.h" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="assets\fragment_core.glsl" />
-    <Content Include="assets\fragment_core2.glsl" />
+    <Content Include="assets\fragment_light.glsl" />
     <Content Include="assets\vertex_core.glsl" />
+    <Content Include="assets\vertex_light.glsl" />
+    <Content Include="textures\beaugosse.png" />
+    <Content Include="textures\brick.png" />
+    <Content Include="textures\cat.png" />
+    <Content Include="textures\planks.png" />
+    <Content Include="textures\planksSpec.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
