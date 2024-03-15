@@ -17,7 +17,6 @@ void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
     glm::mat4 projection = glm::mat4(1.0f);
 
     view = glm::lookAt(position, position+ orientation, up);
-    std::cout << "Update ratio " << width << "/" << height << std::endl;;
     projection = glm::perspective(glm::radians(FOVdeg), (float) width/height, nearPlane, farPlane);
     cameraMatrix = projection*view;
 }
@@ -103,7 +102,7 @@ void Camera::Inputs(GLFWwindow* window)
             orientation = newOrientation;
         }
         orientation = glm::rotate(orientation , glm::radians(-roty),up);
-        glfwSetCursorPos(window, (width/2),(height/2));
+        glfwSetCursorPos(window, (float)width/2,(float)height/2);
     }
 
     

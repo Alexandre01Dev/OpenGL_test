@@ -112,12 +112,15 @@ ProgramShader* Shaders::getProgram(unsigned int ID) {
 
 std::string Shaders::loadShaderSrc(const char* filename)
 {
+    std::string parentDir = (std::__fs::filesystem::current_path().parent_path()).string();
+    std::cout << parentDir << std::endl;
+    std::string texPath = "/";
     std::ifstream file;
     std::stringstream buf;
 
     std::string ret = "";
 
-    file.open(filename);
+    file.open(parentDir+texPath+filename);
 
     if(file.is_open())
     {
@@ -125,7 +128,7 @@ std::string Shaders::loadShaderSrc(const char* filename)
         ret = buf.str();
     }else
     {
-        std::cout << "Could not open " << filename << std::endl;
+        std::cout << "Could not open " << parentDir+texPath+filename << std::endl;
     }
     return ret;
 }

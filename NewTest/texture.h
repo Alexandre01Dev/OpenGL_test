@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <glad/glad.h>
+#define _CRT_SECURE_NO_WARNINGS  // Disable warnings in Visual Studio
+#include <stdio.h>
 
 #include "programShader.h"
 
@@ -18,17 +20,17 @@ public:
     int widthImg, heightImg, numColCh;
     static const char* AssetsPath()
     {
-        std::string parentDir = (std::filesystem::current_path().parent_path()).string();
+        std::string parentDir = (std::__fs::filesystem::current_path().parent_path()).string();
         std::cout << parentDir << std::endl;
-        std::string texPath = "/NewTest/textures/";
+        std::string texPath = "/textures/";
         std::cout << "FUCKYOU " << (parentDir+texPath).c_str() << std::endl;
         // Dynamically allocate memory for the C-style string
         size_t bufferSize = parentDir.length() + texPath.length() + 1;
         char* result = new char[bufferSize];
 
         // Use strcpy_s instead of strcpy
-        strcpy_s(result, bufferSize, (parentDir + texPath).c_str());
 
+        strcpy(result, (parentDir + texPath).c_str());
         return result;
     }
     static void BlendAlphaChannel();

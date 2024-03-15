@@ -2,11 +2,12 @@
 //
 //------- Ignore this ----------
 #include<filesystem>
-#include <__msvc_filebuf.hpp>
+
 
 #include "camera.h"
+#include "Light.h"
 #include "texture.h"
-namespace fs = std::filesystem;
+namespace fs = std::__fs::filesystem;
 //------------------------------
 
 #include <chrono>
@@ -101,10 +102,10 @@ GLuint indices[] =
 
 GLfloat vertices[] =
 {
-    -1.0f, 0.0f,  1.0f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 1.0f, 0.0f, // face left Bottom side 
-    -1.0f, 0.0f,  -1.0f,     0.83f, 0.70f, 0.44f, 	 0.0f, 1.0f,      0.0f, 1.0f, 0.0f, // back left Bottom side
-    1.0f, 0.0f,  1.0f,     0.83f, 0.70f, 0.44f, 	 1.0f, 0.0f,      0.0f, 1.0f, 0.0f, // face right Bottom side
-    1.0f, 0.0f,  -1.0f,     0.83f, 0.70f, 0.44f, 	 1.0f, 1.0f,      0.0f, 1.0f, 0.0f, // back right Bottom side
+    -100.0f, 0.0f,  100.0f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 1.0f, 0.0f, // face left Bottom side
+    -100.0f, 0.0f,  -100.0f,     0.83f, 0.70f, 0.44f, 	 0.0f, 100.0f,      0.0f, 1.0f, 0.0f, // back left Bottom side
+    100.0f, 0.0f,  100.0f,     0.83f, 0.70f, 0.44f, 	 100.0f, 0.0f,      0.0f, 1.0f, 0.0f, // face right Bottom side
+    100.0f, 0.0f,  -100.0f,     0.83f, 0.70f, 0.44f, 	 100.0f, 100.0f,      0.0f, 1.0f, 0.0f, // back right Bottom side
 };
 
 GLuint indices[] =
@@ -153,6 +154,7 @@ GLuint lightIndices[] =
 
 int width = 1280;
 int height = 720;
+unsigned int samples = 8;
 int main()
 {
     std::cout << "Hello, World" << std::endl;
@@ -178,12 +180,15 @@ int main()
     // openGL version 3.4
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);
-    //glfwWindowHint(GLFW_SCALE_TO_MONITOR,GLFW_TRUE);
+    glfwWindowHint(GL_SAMPLES,samples);
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR,GLFW_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-    
+
 
 # ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
+    glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER,GL_FALSE);
+    cout << "APPLE COCOA DETECTED !" << endl;
 #endif
 
     GLFWwindow* window = glfwCreateWindow(width,height,"OpenGL testing",NULL,NULL);
@@ -265,7 +270,7 @@ int main()
     lightVBO.Unbind();
     lightEBO.Unbind();
 
-    glm::vec4 lightColor = glm::vec4(1.0f,1.0f,0.0f,1.0f);
+    glm::vec4 lightColor = glm::vec4(1.0f,1.0f,1.0f,1.0f);
     glm::vec3 lightPos = glm::vec3(0.5f,0.5f,0.5f);
     glm::mat4 lightModel = glm::mat4(1.0f);
     lightModel = glm::translate(lightModel,lightPos);
@@ -276,12 +281,32 @@ int main()
     lightShader->use();
     glUniformMatrix4fv(glGetUniformLocation(lightShader->getID(),"model"),1,GL_FALSE,glm::value_ptr(lightModel));
     glUniform4f(glGetUniformLocation(lightShader->getID(),"lightColor"),lightColor.x,lightColor.y,lightColor.z,lightColor.w);
+
     defaultShader->use();
     glUniformMatrix4fv(glGetUniformLocation(defaultShader->getID(),"model"),1,GL_FALSE,glm::value_ptr(pyramidModel));
     glUniform4f(glGetUniformLocation(defaultShader->getID(),"lightColor"),lightColor.x,lightColor.y,lightColor.z,lightColor.w);
     glUniform3f(glGetUniformLocation(defaultShader->getID(),"lightPos"),lightPos.x,lightPos.y,lightPos.z);
 
-    
+    // directional light
+    defaultShader->setVec3("directLight.color",glm::vec3(1.0f,1.0f,1.0f));
+    defaultShader->setFloat("directLight.ambient",0.2f);
+    defaultShader->setFloat("directLight.diffuse",1.0f);
+    defaultShader->setFloat("directLight.specular",0.50f);
+    defaultShader->setInt("hasDirectLight",1);
+    // points light
+    defaultShader->setVec3("lights[0].position",lightPos);
+    defaultShader->setVec3("lights[0].color",glm::vec3(1.0f,1.0f,1.0f));
+    defaultShader->setFloat("lights[0].ambient",0.2f);
+    defaultShader->setFloat("lights[0].diffuse",5.0f);
+    defaultShader->setFloat("lights[0].specular",0.25f);
+    defaultShader->setInt("lightSize",1);
+    defaultShader->setVec3("lights[1].position",glm::vec3(-80.5f,0.5f,0.5f));
+    defaultShader->setVec3("lights[1].color",glm::vec3(1.0f,0.5f,0.5f));
+    defaultShader->setFloat("lights[1].ambient",0.0f);
+    defaultShader->setFloat("lights[1].diffuse",5.0f);
+    defaultShader->setFloat("lights[1].specular",0.25f);
+    defaultShader->setInt("lightSize",2);
+
    // GLuint uniID = glGetUniformLocation(defaultShader->getID(),"scale");
     GLuint uniLum = glGetUniformLocation(defaultShader->getID(),"luminosity");
     GLuint uniShuffler = glGetUniformLocation(defaultShader->getID(),"shuffler");
@@ -305,20 +330,23 @@ int main()
     textures[3] = bgTexture;
     // Enables the Depth Buffer
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
     // Variables that help the rotation of the pyramid
     float rotation = 0.0f;
     double prevTime = glfwGetTime();
     Camera camera(width,height,glm::vec3(0.0f,0.0f,2.0f));
     camera.InitScrollCallback(window);
-   
+
+
     while (!glfwWindowShouldClose(window))
     {
         // read input
         processInput(window);
         camera.Inputs(window);
         //rendering
-        glClearColor(0.2f,0.3f,0.3f,1.0f);
+        glClearColor(0.2f,0.3f,0.3f,0.4f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      // glfwSwapInterval(0.0f);
 
         // draw shapes
         //vao1.Bind();
@@ -336,7 +364,7 @@ int main()
     
 
         
-        camera.UpdateMatrix(45.0f,0.01f,100.0f);
+        camera.UpdateMatrix(45.0f,0.01f,5000.0f);
         defaultShader->use();
         glUniform3f(glGetUniformLocation(defaultShader->getID(),"camPos"),camera.position.x,camera.position.y,camera.position.z);
         
@@ -385,7 +413,7 @@ int main()
             currentTime = timeSinceEpochMillisec();
             
             std::cout << std::to_string(framesPerSec)+"fps" << std::endl;
-            glfwSetWindowTitle(window, ("OpenGL testing | " + std::to_string(framesPerSec)+"fps").c_str());
+            glfwSetWindowTitle(window, ("OpenGL testing | " + std::to_string(framesPerSec)+"fps | " + std::to_string(width) +"x"+std::to_string(height) ).c_str());
             framesPerSec = 0;
         }
     }
@@ -405,7 +433,7 @@ void framebuffer_size_callback(GLFWwindow* window, int _width, int _height)
     height = _height;
     //gluOrtho2D(0.0, width, 0.0, height);
     cout<< "resizing " << width << "&" << height << endl;
- 
+
     glfwGetFramebufferSize(window, &_width, &_height);
     glViewport(0,0,_width,_height);
   //  glfwSetWindowSize(window, width, height);
