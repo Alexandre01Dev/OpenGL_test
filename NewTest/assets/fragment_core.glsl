@@ -21,6 +21,10 @@ struct DirectionalLight {
    float specular;
    vec3 color;
 };
+float roundWithDecimals(float number, int decimalPlaces) {
+   float powerOfTen = pow(10.0, float(decimalPlaces));
+   return round(number * powerOfTen) / powerOfTen;
+}
 
 uniform int lightSize;
 uniform SceneLight lights[MAX_LIGHTS];
@@ -33,19 +37,20 @@ in vec3 color;
 in vec2 texCoord;
 in vec3 normal;
 in vec3 crntPos;
-float globalLight = 0.15f;
 uniform vec3 camPos;
 // Gets the Texture Unit from the main function
 
 
-uniform sampler2D tex0;
-uniform sampler2D tex1;
+// Gets the Texture Units from the main function
+uniform sampler2D diffuse0;
+uniform sampler2D specular0;
 
 
 
 // Déclaration des functions
 vec3 CalcDirectionnalLight(DirectionalLight light);
-vec3 CalcSimpleLight(SceneLight light);
+vec3 CalcPhongLight(SceneLight light,vec3 tex,vec3 spec);
+vec3 CalcSimpleLight(SceneLight light,vec3 tex,vec3 spec);
 bool DrawLine2V(vec2 start, vec2 end, vec4 color);
 bool DrawLine2V(vec2 start, vec2 end);
 bool DrawLine2V(vec3 start, vec3 end, vec4 color);
@@ -63,28 +68,29 @@ void main()
 
    // normalise vec3/sqrt(vec3^2)
 
-   vec4 tex = texture(tex0, texCoord);
-   vec4 spec = texture(tex1, texCoord);
+   vec4 tex = texture(diffuse0, texCoord);
+   vec4 spec = texture(specular0, texCoord);
 
-   
-
-
+   vec3 simpledTex = vec3(tex);
+   vec3 simpledSpec = vec3(spec);
 
    vec3 result = vec3(0);
    if(hasDirectLight){
       result += CalcDirectionnalLight(directLight);
    }
    for(int i = 0; i < lightSize; i++){
-      result += CalcSimpleLight(lights[i]);
+      result += CalcSimpleLight(lights[i],simpledTex,simpledSpec);
 
-      if(DrawLine2V(lights[i].position,camPos,vec4(1,1,0,0.5))){
+    /*  if(DrawLine2V(lights[i].position,camPos,vec4(1,1,0,0.5))){
          return;
-      }
+      }*/
    }
-
-   //FragColor = texture2D(tex0, texCoord) * vec4(color,1) * (lightColor * diffuse);
-
-   FragColor = vec4(result,tex.a) * vec4(color, 1);
+   int fractional = 40;
+   //FragColor = texture2D(diffuse0, texCoord) * vec4(color,1) * (lightColor * diffuse);
+   result.r =((round(result.r*fractional/2.0f))/fractional)*2.0f;
+   result.g = ((round(result.g*fractional/2.0f))/fractional)*2.0f;
+   result.b = ((round(result.b*fractional/2.0f))/fractional)*2.0f;
+   FragColor = vec4(result,tex.a); //* vec4(color, 1);
 }
 bool DrawLine2V(vec3 start, vec3 end){
    return DrawLine2V(start,end, vec4(0,1,0,1));
@@ -126,11 +132,20 @@ bool DrawLine(vec3 start, vec3 end,vec4 color){
    }
    return false;
 }
+vec3 CalcSimpleLight(SceneLight light, vec3 tex, vec3 spec){
+   vec3 lightVec = light.position - crntPos;
+   vec3 lightDirection = normalize(lightVec); // Assume light direction is already normalized
 
-vec3 CalcSimpleLight(SceneLight light){
-   vec3 tex = vec3(texture(tex0, texCoord));
-   vec3 spec = vec3(texture(tex1, texCoord));
+   // Calculate diffuse lighting using Lambertian model
+   float diffuseIntensity = max(dot(normal, lightDirection), 0.0);
+   vec3 diffuseColor = light.color.rgb * diffuseIntensity;
 
+   // Combine diffuse and ambient lighting
+   vec3 finalColor = (diffuseColor + light.ambient * tex);
+
+   return finalColor;
+}
+vec3 CalcPhongLight(SceneLight light, vec3 tex, vec3 spec){
 
    vec3 lightVec = light.position - crntPos;
    float dist = length(lightVec);
@@ -155,22 +170,28 @@ vec3 CalcSimpleLight(SceneLight light){
    vec3 reflectionDirection = reflect(-lightDirection,normal);
    float maxSpecDistance = 100.0f; // modify the code with clamp ?
    // Calcul de l'effet spéculaire
+   // Calculate the specular angle
    float specAngle = max(dot(viewDirection, reflectionDirection), 0.0f);
-   float distanceFactor = clamp(1.0 - distance(crntPos, lightPos) / maxSpecDistance, 0.0, 1.0);
-   float specular = pow(specAngle, 16) * specularLight * distanceFactor;
-   tex *= (light.color * (diffuse * inten+ ambient + globalLight + specular));
 
+   // Clamp the distance factor without calling the clamp function
+   float distanceFactor = max(0.0, 1.0 - distance(crntPos, lightPos) / maxSpecDistance);
 
-   tex.r += spec.r * specular * inten;
-   tex.g += spec.r * specular * inten;
-   tex.b += spec.r * specular * inten;
+   // Calculate the specular component without using pow()
+   float specular = specAngle;
+   for (int i = 1; i < 16; ++i) {
+      specular *= specAngle; // Repeated multiplication instead of pow()
+   }
+   specular *= specularLight * distanceFactor;
+
+   tex *= (light.color * (diffuse * inten + ambient + specular));
+   tex += spec.r * specular * inten;
    return tex;
 }
 
 vec3 CalcDirectionnalLight(DirectionalLight light)
 {
-   vec3 tex = vec3(texture(tex0, texCoord));
-   vec3 spec = vec3(texture(tex1, texCoord));
+   vec3 tex = vec3(texture(diffuse0,texCoord));
+   vec3 spec = vec3(texture(specular0, texCoord));
    float ambient = light.ambient;
    vec3 lightPos = vec3(1.0f,1.0f,0.0f);
    vec3 lightDirection = normalize(lightPos);
@@ -185,7 +206,7 @@ vec3 CalcDirectionnalLight(DirectionalLight light)
    float specAngle = max(dot(viewDirection, reflectionDirection), 0.0f);
   // float distanceFactor = clamp(1.0 - distance(crntPos, lightPos) / maxSpecDistance, 0.0, 1.0);
    float specular = pow(specAngle, 16) * specularLight ;//* distanceFactor;
-   tex *= (light.color * (diffuse + ambient + globalLight + specular));
+   tex *= (light.color * (diffuse + ambient + specular));
 
    tex.r += spec.r * specular;
    tex.g += spec.r * specular;

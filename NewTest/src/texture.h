@@ -8,14 +8,29 @@
 
 #include "programShader.h"
 
+enum TexType {
+    DIFFUSE,
+    SPECULAR
+};
+
 
 class Texture
 {
 public:
-    Texture(const char* path, const char* fileName, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
-    Texture(const char* path, const char* fileName, GLenum slot) : Texture::Texture(path, fileName,GL_TEXTURE_2D, slot, GL_RGBA, GL_UNSIGNED_BYTE) {};
+    static std::string texTypeToString(TexType type) {
+        switch (type) {
+            case DIFFUSE:
+                return "diffuse";
+            case SPECULAR:
+                return "specular";
+            default:
+                return "unknown";
+        }
+    }
+    Texture(const char* path, const char* fileName, TexType texType, GLenum slot, GLenum format, GLenum pixelType);
+    Texture(const char* path, const char* fileName, GLenum slot,TexType texType) : Texture::Texture(path, fileName,texType, slot, GL_RGBA, GL_UNSIGNED_BYTE) {};
     GLuint ID;
-    GLenum type;
+    TexType type;
     GLuint unit;
     int widthImg, heightImg, numColCh;
     static const char* AssetsPath()
@@ -23,7 +38,6 @@ public:
         std::string parentDir = (std::__fs::filesystem::current_path().parent_path()).string();
         std::cout << parentDir << std::endl;
         std::string texPath = "/textures/";
-        std::cout << "FUCKYOU " << (parentDir+texPath).c_str() << std::endl;
         // Dynamically allocate memory for the C-style string
         size_t bufferSize = parentDir.length() + texPath.length() + 1;
         char* result = new char[bufferSize];

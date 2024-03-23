@@ -6,8 +6,7 @@ int mouseState = 0;
 float speedWheel = 1;
 
 
-Camera::Camera(const int& width, const int& height, glm::vec3 position): position(position), width(width),
-                                                                               height(height)
+Camera::Camera(const int& width, const int& height, glm::vec3 position): position(position), width(width),height(height)
 {
 }
 
@@ -16,14 +15,13 @@ void Camera::UpdateMatrix(float FOVdeg, float nearPlane, float farPlane)
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    view = glm::lookAt(position, position+ orientation, up);
+    view = glm::lookAt(position, position+orientation, up);
     projection = glm::perspective(glm::radians(FOVdeg), (float) width/height, nearPlane, farPlane);
     cameraMatrix = projection*view;
 }
 
 void Camera::Matrix(ProgramShader* shader, const char* uniform)
 {
-   
     glUniformMatrix4fv(glGetUniformLocation(shader->getID(),uniform),1,GL_FALSE,glm::value_ptr(cameraMatrix));
 }
 
@@ -114,12 +112,12 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
    {
        if(yoffset == 1)
        {
-           speedWheel = glm::max(speedWheel+0.01f,0.0f);
+           speedWheel = glm::max(speedWheel+0.03f,0.0f);
        }else
        {
            if(yoffset == -1)
            {
-               speedWheel = glm::max(speedWheel-0.01f,0.0f);
+               speedWheel = glm::max(speedWheel-0.03f,0.0f);
            }
        }
  

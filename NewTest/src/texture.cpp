@@ -8,7 +8,7 @@
 
 
 
-Texture::Texture(const char* path, const char* fileName, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
+Texture::Texture(const char* path, const char* fileName, const TexType texType, GLenum slot, GLenum format, GLenum pixelType)
 {
     type = texType;
     stbi_set_flip_vertically_on_load(true);
@@ -24,25 +24,25 @@ Texture::Texture(const char* path, const char* fileName, GLenum texType, GLenum 
     glGenTextures(1,&ID);
     std::cout << &ID;
     glActiveTexture(slot);
-    glBindTexture(texType,ID);
+    glBindTexture(GL_TEXTURE_2D,ID);
     // resolution of the texture
-    glTexParameteri(texType,GL_TEXTURE_MIN_FILTER,GL_NEAREST_MIPMAP_LINEAR);
-    glTexParameteri(texType,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 
     unit = slot;
     //repetion of the texture
-    glTexParameteri(texType,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTexParameteri(texType,GL_TEXTURE_WRAP_T,GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
     // format GL_RGBA
-    glTexImage2D(texType, 0, GL_RGBA, widthImg, heightImg, 0, format, pixelType, bytes);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, widthImg, heightImg, 0, format, pixelType, bytes);
 
     // Generate Midmaps
-    glGenerateMipmap(texType);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     // Free image in RAM
     stbi_image_free(bytes);
 
-    glBindTexture(texType, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
     delete[] path;
 }
 
@@ -65,12 +65,12 @@ void Texture::texUnit(ProgramShader* shader, const char* uniform, GLuint unit)
 void Texture::Bind()
 {
     glActiveTexture(GL_TEXTURE0 + unit);
-    glBindTexture(type, ID);
+    glBindTexture(GL_TEXTURE_2D, ID);
 }
 
 void Texture::Unbind()
 {
-    glBindTexture(type, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::Delete()
