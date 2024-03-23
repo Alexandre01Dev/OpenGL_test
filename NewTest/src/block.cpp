@@ -8,5 +8,5 @@
 
 
 Block::Block() {
-    Mesh mesh()
+    Mesh mesh();
 }
