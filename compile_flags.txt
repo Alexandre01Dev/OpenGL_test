@@ -1,0 +1,4 @@
+c++
+-std=c++17
+-L.\Linking\lib
+-I.\Linking\include
