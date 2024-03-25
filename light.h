@@ -26,10 +26,12 @@ class Light {
         float diffuse;
         float ambiant;
         float specular;
+        float intenA;
+        float intenB;
         std::array<float, 3>* color = nullptr;
 
-        Light(glm::vec3 pos, LightType type,std::array<float, 3>& color, float ambiant, float diffuse, float specular);
-        Light(glm::vec3 pos, LightType type,glm::vec3 color, float ambiant, float diffuse, float specular);
+        Light(glm::vec3 pos, LightType type,std::array<float, 3>& color, float ambiant, float diffuse, float specular, float intenA = 0.1f, float intenB = 0.04f);
+        Light(glm::vec3 pos, LightType type,glm::vec3 color, float ambiant, float diffuse, float specular, float intenA = 0.1f, float intenB = 0.04f);
 
 
 

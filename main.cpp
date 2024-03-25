@@ -289,7 +289,7 @@ int main() {
   defaultShader->setInt("hasDirectLight", 1);
   // points light
   Light light1(glm::vec3(lightPos), Light::SPECULAR,
-               glm::vec3(1.0f, 1.0f, 1.0f), 0.2f, 5.0f, 0.25f);
+               glm::vec3(1.0f, 1.0f, 1.0f), 0.2f, 10.0f, 0.25f);
   light1.SetupShader(defaultShader);
   Light light2(glm::vec3(glm::vec3(-80.5f, 0.5f, 0.5f)), Light::SPECULAR,
                glm::vec3(1.0f, 0.5f, 0.5f), 0.2f, 5.0f, 0.25f);
@@ -375,7 +375,7 @@ int main() {
     }
 
     if (crntTime - prevTime2 >= 0.1f) {
-      if (Light::getStaticID() < 128) {
+      if (Light::getStaticID() < 32) {
         Light rLight(light1.pos, Light::SPECULAR, lColor,
                      0.0f, 1.0f, 0.25f);
         rLight.SetupShader(defaultShader);
@@ -411,7 +411,10 @@ int main() {
         cLength = *lColor.data();
     }
 
-    ImGui::SliderInt("Shader compression",&sColorCompression,0,100);
+    ImGui::SliderInt("Color compression",&sColorCompression,0,100);
+    ImGui::SliderFloat("Light1 intensity A",&light1.intenA,0,10);
+    ImGui::SliderFloat("Light1 intensity B",&light1.intenB,0,5);
+    ImGui::SliderFloat("Light1 spec",&light1.specular,0,10);
 
     ImGui::End();
 

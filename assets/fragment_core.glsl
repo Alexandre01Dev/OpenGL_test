@@ -11,6 +11,8 @@ struct SceneLight {
    vec3 position;
    float ambient;
    float diffuse;
+   float intenA;
+   float intenB;
    float specular;
    vec3 color;
 };
@@ -148,8 +150,10 @@ vec3 CalcPhongLight(SceneLight light, vec3 tex, vec3 spec){
 
    vec3 lightVec = light.position - crntPos;
    float dist = length(lightVec);
-   float a = 0.1f;
-   float b = 0.04f;
+   /*float a = 0.1f;
+   float b = 0.04f;*/
+   float a = light.intenA;
+   float b = light.intenB;
    // 1/a*d^2*b*d+1
    // a = quadratic term
    // b = linear

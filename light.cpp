@@ -12,7 +12,7 @@
 static unsigned int inc;
 static int staticID;
 bool special = false;
-Light::Light(glm::vec3 pos,LightType type,glm::vec3 color, float ambiant, float diffuse, float specular) {
+Light::Light(glm::vec3 pos,LightType type,glm::vec3 color, float ambiant, float diffuse, float specular, float intenA, float intenB) {
     currentID = staticID;
     staticID++;
     Light::pos = pos;
@@ -20,6 +20,8 @@ Light::Light(glm::vec3 pos,LightType type,glm::vec3 color, float ambiant, float 
     Light::ambiant = ambiant;
     Light::diffuse = diffuse;
     Light::specular = specular;
+    Light::intenA = intenA;
+    Light::intenB = intenB;
     std::cout<< "Hello" << std::endl;
     Light::color = new std::array<float,3>{color.r,color.g,color.b};
     std::cout<< "Set color" << std::endl;
@@ -28,8 +30,8 @@ Light::Light(glm::vec3 pos,LightType type,glm::vec3 color, float ambiant, float 
 
 
 
-Light::Light(glm::vec3 pos, Light::LightType type, std::array<float, 3>& color, float ambiant, float diffuse, float specular)
-        : pos(pos), type(type), color(&color), ambiant(ambiant), diffuse(diffuse), specular(specular) {
+Light::Light(glm::vec3 pos, Light::LightType type, std::array<float, 3>& color, float ambiant, float diffuse, float specular, float intenA, float intenB)
+        : pos(pos), type(type), color(&color), ambiant(ambiant), diffuse(diffuse), specular(specular), intenA(intenA), intenB(intenB) {
     std::cout << "Old Color "<< &color << std::endl;
     std::cout << "New Color "<< Light::color << std::endl;
     special = true;
@@ -53,6 +55,8 @@ void Light::SetupShader(ProgramShader *shader) {
     shader->setFloat(namePath+".ambient",ambiant);
     shader->setFloat(namePath+".diffuse",diffuse);
     shader->setFloat(namePath+".specular",specular);
+    shader->setFloat(namePath+".intenA",intenA);
+    shader->setFloat(namePath+".intenB",intenB);
     if(hasBeenInit) return;
     inc++;
     shader->setInt("lightSize",inc);
