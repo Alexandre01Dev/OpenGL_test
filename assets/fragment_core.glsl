@@ -44,7 +44,7 @@ uniform vec3 camPos;
 // Gets the Texture Units from the main function
 uniform sampler2D diffuse0;
 uniform sampler2D specular0;
-
+uniform int fractional = 30;
 
 
 // Déclaration des functions
@@ -85,7 +85,6 @@ void main()
          return;
       }*/
    }
-   int fractional = 30;
    //FragColor = texture2D(diffuse0, texCoord) * vec4(color,1) * (lightColor * diffuse);
    result.r =((round(result.r*fractional/2.0f))/fractional)*2.0f;
    result.g = ((round(result.g*fractional/2.0f))/fractional)*2.0f;

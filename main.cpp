@@ -157,9 +157,12 @@ unsigned int samples = 8;
 
 int main() {
   // Création d'une nouvelle console
+#ifdef __WIN32__
   AllocConsole();
-  FILE *fp;
+  FILE *fp;é
   freopen_s(&fp, "CONOUT$", "w", stdout);
+#endif
+
   cout << "Hello, World" << endl;
   /* glm test
   glm::vec4 vec(1.0f,0.0f,1.0f,1.0f);     //base vector
@@ -315,10 +318,13 @@ int main() {
   std::array<float, 3> lColor = {1.0f, 0.0f, 0.0f}; // Reference to the array variable
   std::list<Light> lights = {};
   auto cLength = *lColor.data();
+  int sColorCompression = 30;
+
   while (!glfwWindowShouldClose(window)) {
     // read input
     processInput(window);
     camera.Inputs(window);
+    defaultShader->setInt("fractional",sColorCompression);
     // rendering
     glClearColor(0.2f, 0.3f, 0.3f, 0.4f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -392,6 +398,9 @@ int main() {
         }
         cLength = *lColor.data();
     }
+
+    ImGui::SliderInt("Shader compression",&sColorCompression,0,100);
+
     ImGui::End();
 
     ImGui::Render();
