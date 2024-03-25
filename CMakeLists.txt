@@ -20,7 +20,13 @@ option( GLFW-CMAKE-STARTER-USE-GLFW-GLAD "Use GLAD from GLFW" ON )
 
 if( GLFW-CMAKE-STARTER-USE-GLFW-GLAD )
     include_directories("${GLFW_SOURCE_DIR}/deps")
-    set( GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h" )
+    set( GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h"
+            model.cpp
+            model.h
+            FileUtils.cpp
+            FileUtils.h
+            base64.cpp
+            base64.h)
 endif()
 include_directories(
         "Linking/include"

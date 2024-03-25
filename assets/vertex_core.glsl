@@ -16,15 +16,19 @@ out vec2 texCoord;
 uniform mat4 camMatrix;
 // import model matrix
 uniform mat4 model;
+uniform mat4 translation;
+uniform mat4 rotation;
+uniform mat4 scale;
 
-uniform float scale;
+
+
 uniform float luminosity;
 uniform vec3 shuffler;
 
 
 
 void main(){
-    crntPos = vec3(model*vec4(aPos,1.0f));
+    crntPos = vec3(model * translation * rotation * scale * vec4(aPos, 1.0f));
 
     //gl_Position = vec4(aPos.x + aPos.x * scale, aPos.y + aPos.y * scale, aPos.z + aPos.z * scale, 1.0);
 
@@ -40,8 +44,8 @@ void main(){
         fColor.b += shuffler.b;
     }
     color = vec3(min(fColor.r*luminosity,3.0f), min(fColor.g*luminosity,3.0f), min(fColor.b*luminosity,3.0f));
-    texCoord = aTex;
-    
+    texCoord = mat2(0.0f,-1.0f,1.0,0.0) * aTex;
+
 
     gl_Position = camMatrix * vec4(crntPos, 1.0);
 }

@@ -5,8 +5,10 @@
 #include <filesystem>
 
 #include "camera.h"
+#include "FileUtils.h"
 #include "glfw/src/internal.h"
 #include "light.h"
+#include "model.h"
 #include "texture.h"
 
 namespace fs = std::filesystem;
@@ -36,7 +38,9 @@ using namespace std;
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void window_content_scale_callback(GLFWwindow *window, float xScale,
                                    float yScale);
-
+void errorCallback(int error, const char* description) {
+    std::cerr << "Error: " << description << std::endl;
+}
 void processInput(GLFWwindow *window);
 std::string loadShaderSrc(const char *filename);
 float zoom = 0.5f;
@@ -156,12 +160,13 @@ int height = 720;
 unsigned int samples = 8;
 
 int main() {
+    glfwSetErrorCallback(errorCallback);
   // Création d'une nouvelle console
-#ifdef __WIN32__
+/*#ifdef __WIN32__
   AllocConsole();
-  FILE *fp;é
+  FILE *fp;
   freopen_s(&fp, "CONOUT$", "w", stdout);
-#endif
+#endif*/
 
   cout << "Hello, World" << endl;
   /* glm test
@@ -214,8 +219,8 @@ int main() {
   */
   Texture textures[]{
       Texture(Texture::AssetsPath(), "planks.png", 0, TexType::DIFFUSE),
-      Texture(Texture::AssetsPath(), "planksSpec.png", TexType::SPECULAR, 1,
-              GL_RED, GL_UNSIGNED_BYTE)};
+      Texture(Texture::AssetsPath(), "planksSpec.png", 1,TexType::SPECULAR, GL_RED, GL_UNSIGNED_BYTE)
+  };
 
   Shaders shaders = Shaders();
   ProgramShader *defaultShader = shaders.loadShader(
@@ -319,6 +324,11 @@ int main() {
   std::list<Light> lights = {};
   auto cLength = *lColor.data();
   int sColorCompression = 30;
+    const char* c = FileUtils::GetFilePath(FileUtils::MODELS,"sword/scene.gltf");
+    std::cout << "HUH ! " << c << "END" << endl;
+
+    Model monkey(FileUtils::GetFilePath(FileUtils::MODELS,"monkey.gltf"),false);
+    Model sword(FileUtils::GetFilePath(FileUtils::MODELS,"/sword/scene.gltf"));
 
   while (!glfwWindowShouldClose(window)) {
     // read input
@@ -382,9 +392,11 @@ int main() {
 
     // bind texture
 
-    light.Draw(lightShader, camera);
-    floor.Draw(defaultShader, camera);
 
+   light.Draw(lightShader, camera,glm::mat4(1.0f),glm::vec3(0.0f,5.0f,0.0f),glm::quat(1.0f,0.5f,0.0f,0.0f), glm::vec3(5.0f));
+   floor.Draw(defaultShader, camera,glm::mat4(1.0f),glm::vec3(0.0f,0.0f,0.0f));
+      monkey.Draw(defaultShader,camera,glm::vec3(10.0f,10.0f,0.0f), glm::quat(1.0f,0.1f,0.1f,0.0f), glm::vec3(10.0f,10.0f,10.0f));
+      sword.Draw(defaultShader,camera,glm::vec3(-10.0f,.0f,0.0f), glm::quat(1.0f,0.1f,0.2f,0.14f), glm::vec3(1.0f,1.0f,1.0f));
     // IMGUI
 
     ImGui::Begin("Test IMGUI window");
@@ -427,7 +439,7 @@ int main() {
       framesPerSec = 0;
     }
   }
-
+    cout << "Hello" << endl;
   ImGui_ImplGlfw_Shutdown();
   ImGui_ImplOpenGL3_Shutdown();
   ImGui::DestroyContext();

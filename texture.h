@@ -28,8 +28,8 @@ public:
                 return "unknown";
         }
     }
-    Texture(const char* path, const char* fileName, TexType texType, GLenum slot, GLenum format, GLenum pixelType);
-    Texture(const char* path, const char* fileName, GLenum slot,TexType texType) : Texture::Texture(path, fileName,texType, slot, GL_RGBA, GL_UNSIGNED_BYTE) {};
+    Texture(const char* path, const char* fileName,  GLenum slot,TexType texType, GLenum format, GLenum pixelType);
+    Texture(const char* path, const char* fileName, GLenum slot,TexType texType, bool alphaChannel = false);
     GLuint ID;
     TexType type;
     GLuint unit;
@@ -53,4 +53,7 @@ public:
     void Bind();
     void Unbind();
     void Delete();
+private:
+    unsigned char* loadTexture(const char* path, const char* fileName, bool alphaChannel);
+    void loadInGL(GLenum slot,TexType texType, GLenum format, GLenum pixelType, unsigned char* bytes);
 };
