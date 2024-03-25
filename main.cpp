@@ -329,7 +329,7 @@ int main() {
 
     Model monkey(FileUtils::GetFilePath(FileUtils::MODELS,"monkey.gltf"),false);
     Model sword(FileUtils::GetFilePath(FileUtils::MODELS,"/sword/scene.gltf"));
-
+    bool polygonModeChecked[2] = {false,false};
   while (!glfwWindowShouldClose(window)) {
     // read input
     processInput(window);
@@ -415,7 +415,16 @@ int main() {
     ImGui::SliderFloat("Light1 intensity A",&light1.intenA,0,10);
     ImGui::SliderFloat("Light1 intensity B",&light1.intenB,0,5);
     ImGui::SliderFloat("Light1 spec",&light1.specular,0,10);
+    ImGui::Checkbox("Polygon Mode",&polygonModeChecked[0]);
+    if(polygonModeChecked[0] != polygonModeChecked[1]) {
+        if(polygonModeChecked[0]) {
+            glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+        }else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
 
+        polygonModeChecked[1] = polygonModeChecked[0];
+    }
     ImGui::End();
 
     ImGui::Render();
