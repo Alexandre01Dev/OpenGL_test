@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.1 )
 
-project( GLFW-CMake-starter )
+project( OPENGL_TEST )
 
 find_package( OpenGL REQUIRED )
 set(CMAKE_CXX_STANDARD 17)
@@ -12,6 +12,7 @@ include_directories( ${OPENGL_INCLUDE_DIRS} )
 set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )
 set( GLFW_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 set( GLAD_GL "" )
+set (IMGUI "" )
 
 add_subdirectory( glfw )
 
@@ -31,13 +32,14 @@ endif()
 
 
 #files
-file(GLOB SOURCES *.cpp *.c)
+file(GLOB SOURCES *.cpp *.c imgui/*)
+
 set( GLFW-CMAKE-STARTER-SRC
         main.cpp
         )
 
-add_executable( GLFW-CMake-starter WIN32 ${SOURCES} ${GLAD_GL} )
-target_link_libraries( GLFW-CMake-starter
+add_executable( OPENGL_TEST WIN32 ${SOURCES} ${GLAD_GL})
+target_link_libraries( OPENGL_TEST
         ${OPENGL_LIBRARIES}
         glfw
 )
