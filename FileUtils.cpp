@@ -4,14 +4,17 @@
 
 #include "FileUtils.h"
 
-#include <iostream>
-#include <string.h>
+
+
 
 #include <string>
 
 #ifdef __WIN32__
 #include <bits/fs_fwd.h>
 #include <bits/fs_path.h>
+#include <iostream>
+#include <cstring>
+
 #endif
 
 #ifdef __APPLE__
@@ -20,7 +23,7 @@
 
 
 const char* FileUtils::RootPath() {
-    return  std::filesystem::current_path().c_str();
+    return std::filesystem::current_path().string().c_str();
 }
 
 const char * FileUtils::GetFilePath(const char *path) {
